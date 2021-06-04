@@ -1,10 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 // import SellingPartnerAPI from 'amazon-sp-api';
-import pkg from 'mongodb';
 import mongoose from 'mongoose';
-
-const { MongoClient } = pkg;
 
 dotenv.config();
 
