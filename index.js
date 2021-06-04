@@ -1,18 +1,36 @@
-import MwsApi from 'amazon-mws';
 import express from 'express';
 import dotenv from 'dotenv';
+// import SellingPartnerAPI from 'amazon-sp-api';
+import pkg from 'mongodb';
+
+const { MongoClient } = pkg;
 
 dotenv.config();
 
-// initiate Amazon MWS
-const amazonMws = new MwsApi();
-amazonMws.setApiKey(process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY);
+const password = process.env.DB_PASSWORD;
+const dbName = process.env.DB_NAME;
+
+const uri = `mongodb+srv://eugenDb:${password}@cluster0.grdmy.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+client.connect(err => {
+  if (err !== null) {
+    console.log('connection error: ', err);
+    return err;
+  }
+  const dbExample = client.db(`${dbName}`);
+  console.log('collection: ', dbExample);
+  client.close();
+});
 
 // start Express app
 const app = express();
 const port = 3000;
 
-amazonMws.setResponseFormat('JSON');
 
 app.get('/', (req, res) => {
   res.send('Hello from Selling-Partner-API!');
