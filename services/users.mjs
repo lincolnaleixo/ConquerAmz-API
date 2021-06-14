@@ -41,7 +41,7 @@ export default {
   updateUser: async function (request, response) {
     try {
       const data = await UserModel.findOneAndUpdate({
-        id: req.params.id,
+        _id: req.params.id,
       });
       return res.status(200).send({
         data: 'User was successfully updated!',
@@ -56,7 +56,7 @@ export default {
   deleteUserById: async function (request, response) {
     try {
       console.log(request.params.id)
-      const data = await UserModel.remove({ id: request.params.id });
+      const data = await UserModel.remove({ _id: request.params.id });
       console.log(data)
       return response.status(200).send({ data: "Deleted Successfully" });
     } catch (error) {
