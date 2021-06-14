@@ -1,28 +1,32 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import fs from 'fs';
-// import SellingPartnerAPI from 'amazon-sp-api';
+import SellingPartnerAPI from 'amazon-sp-api';
 // import mongoose from 'mongoose';
 import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
-// const cloudUri = `mongodb+srv://eugenDb:${password}@cluster0.grdmy.mongodb.net/${dbName}?retryWrites=true&w=majority`;
-// const containerUri = process.env.DB_CONTAINER_STRING;  // connection string for connecting to DB in container
-
-// const uri = process.env.NODE_ENV === 'container' ? containerUri : cloudUri;
-
-// const closeDbConnection = async () => {
-//   console.log('closing db connection...');
-//   mongoose.connection.close();
-// };
-
-// mongoose.connect(uri, {
-//   useNewUrlParser: true,
-// }, (err) => {
-//   if (err) console.log('error: ', err);
-//   else console.log('connected successfully with DB.');
-// });
+try {
+  // Get Access Token using Refresh Token from self-auth method
+  const sellingPartner = new SellingPartnerAPI({
+    region: 'na',
+    refresh_token: process.env.AWS_REFRESH_TOKEN,
+    options: {
+      auto_request_tokens: false,
+    }
+  });
+  await sellingPartner.refreshAccessToken();
+  await sellingPartner.refreshRoleCredentials();
+  // Test everything by getting some marketplace participants:
+  const res = await sellingPartner.callAPI({
+    operation: 'getMarketplaceParticipations',
+    endpoint: 'sellers',
+  });
+  console.log('response from marketplace: ', res);
+} catch (e) {
+  console.log(e);
+}
 
 // start Express app
 const app = express();

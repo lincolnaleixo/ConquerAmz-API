@@ -1,11 +1,4 @@
 import Router from 'express';
-// import {
-//   getAllUsers,
-//   getUserById,
-//   createUser,
-//   updateUser,
-//   deleteUserById,
-// } from '../services/users.mjs';
 import userServices from './../services/users.mjs';
 
 const router = Router();
