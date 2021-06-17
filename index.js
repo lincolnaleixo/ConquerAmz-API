@@ -60,7 +60,7 @@ app.get('/', (req, res) => {
   res.send('Hello from Selling-Partner-API!');
 });
 
-app.use('api/user', userRoutes);
+app.use('/api/user', userRoutes);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
