@@ -48,10 +48,8 @@ try {
   await sellingPartner.refreshAccessToken();
   await sellingPartner.refreshRoleCredentials();
   // Test everything by getting some marketplace participants:
-  console.log('access token: ', sellingPartner.access_token);
-  console.log('credentials: ', sellingPartner.role_credentials);
-  // const res = await sellingPartnerServices.testMarketplaceParticipations(sellingPartner);
-  // console.log('reponse: ', res);
+  // console.log('access token: ', sellingPartner.access_token);
+  // console.log('credentials: ', sellingPartner.role_credentials);
 } catch (e) {
   console.log(e);
 }

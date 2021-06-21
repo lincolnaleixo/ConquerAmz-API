@@ -56,7 +56,7 @@ userSchema.statics.findByCredentials = async function(email, password) {
   const doPasswordMatch = await bcrypt.compare(password, user.password);
   if (!doPasswordMatch) throw new Error({ error: 'Invalid credentials.' });
   return user;
-}
+};
 
 
 const User = mongoose.model('User', userSchema);
