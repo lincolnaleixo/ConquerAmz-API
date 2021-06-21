@@ -14,7 +14,7 @@ const app = express();
 const port = 3000;
 
 // DB & Mongoose:
-const cloudUri = `mongodb+srv://eugenDb:${process.env.DB_PASSWORD}@cluster0.grdmy.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+const cloudUri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.grdmy.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 mongoose
   .connect(cloudUri, {
     useNewUrlParser: true,
