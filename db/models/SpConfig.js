@@ -1,5 +1,6 @@
-import { config } from 'dotenv';
 import mongoose from 'mongoose';
+
+const ObjectId = mongoose.Types.ObjectId;
 
 const configSchema = mongoose.Schema({
   sellingParnterAppClientId: {
@@ -32,20 +33,25 @@ const configSchema = mongoose.Schema({
   },
 });
 
-configSchema.statics.findOneAndUpdate = async function(body) {
-  const filter = { userId: body.userId };
-  const doc = await Config.findOneAndUpdate(filter, body, {
+configSchema.statics.findAndUpdate = async function(body) {
+  const userId = ObjectId(body.userId);
+  console.log('body for model: ', userId);
+  const doc = await UserConfig.findByIdAndUpdate(userId, body, {
     upsert: true,
     new: true,
   });
+  if (!doc) {
+    throw new Error({ error: 'No User Found.' });
+  }
   return doc;
 };
 
-configSchema.statics.findOne = async function(userId) {
-  const filter = { userId };
-  const doc = await Config.find(filter);
+configSchema.statics.findOne = async function(body) {
+  // const filter = { userId };
+  const id = ObjectId(body.id);
+  const doc = await UserConfig.find(id);
   return doc;
 };
 
-const Config = mongoose.model('UserConfig', configSchema);
-export default Config;
+const UserConfig = mongoose.model('UserConfig', configSchema);
+export default UserConfig;
