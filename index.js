@@ -1,11 +1,40 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import fs from 'fs';
+import cors from 'cors';
 import SellingPartnerAPI from 'amazon-sp-api';
-// import mongoose from 'mongoose';
-import userRoutes from './routes/userRoutes.js';
+import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
+import morgan from 'morgan';
+import userRoutes from './routes/users.js';
 
 dotenv.config();
+
+// start Express app
+const app = express();
+const port = 3000;
+
+// DB & Mongoose:
+const cloudUri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.grdmy.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+mongoose
+  .connect(cloudUri, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('DB is connected.')
+  })
+  .catch((err) => {
+    console.log('db error: ', err);
+  });
+
+
+// Add  cors middleware
+app.use(cors());
+// Add middleware for parsing JSON and urlencoded data
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(morgan('dev'));
 
 try {
   // Get Access Token using Refresh Token from self-auth method
@@ -19,30 +48,27 @@ try {
   await sellingPartner.refreshAccessToken();
   await sellingPartner.refreshRoleCredentials();
   // Test everything by getting some marketplace participants:
-  const res = await sellingPartner.callAPI({
-    operation: 'getMarketplaceParticipations',
-    endpoint: 'sellers',
-  });
-  console.log('response from marketplace: ', res);
+  console.log('access token: ', sellingPartner.access_token);
+  console.log('credentials: ', sellingPartner.role_credentials);
+  // const res = await sellingPartnerServices.testMarketplaceParticipations(sellingPartner);
+  // console.log('reponse: ', res);
 } catch (e) {
   console.log(e);
 }
-
-// start Express app
-const app = express();
-const port = 3000;
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 app.get('/', (req, res) => {
   res.send('Hello from Selling-Partner-API!');
 });
 
-app.use('api/v1/', userRoutes);
+app.use('/api/user', userRoutes);
+
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
+  err.status = 404;
+  res.send('Route not found');
+  next(err);
+})
 
 app.listen(port, async () => {
   console.log(`App listening at ${port}`);
