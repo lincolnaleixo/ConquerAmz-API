@@ -15,19 +15,19 @@ services:
         volumes:
             - ./conqueramazon-api:/data
         environment:
-            - DB_USERNAME: eugenDb
-            - DB_NAME: shinytestdb
-            - DB_PASSWORD: Mha1994mutin!
-            - NODE_ENV: container
+            DB_USERNAME: eugenDb
+            DB_NAME: shinytestdb
+            DB_PASSWORD: Mha1994mutin!
+            NODE_ENV: container
         depends_on: 
             - mongo-db
     app:
         container_name: conqueramazon-fe
-        build: ./conquer-amz
+        build: ./conqueramazon-fe
         restart: always
         ports:
             - "8080:8080"
         volumes:
             - ./conqueramazon-fe:/data
         environment:
-            - BASE_API: http://localhost:3000
+            BASE_API: http://localhost:3000
