@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const ObjectId = mongoose.Types.ObjectId;
 
 const configSchema = mongoose.Schema({
-  sellingParnterAppClientId: {
+  sellingPartnerAppClientId: {
     type: String,
     required: [true, 'Some info is missing: SELLING_PARTNER_APP_CLIENT_ID'],
   },
@@ -15,7 +15,7 @@ const configSchema = mongoose.Schema({
     type: String,
     required: [true, 'Some info is missing: AWS_SELLING_PARTNER_ACCESS_KEY_ID'],
   },
-  awsSellingPartnerSecretAccessKeyId: {
+  awsSellingPartnerSecretAccessKey: {
     type: String,
     required: [true, 'Some info is missing: AWS_SELLING_PARTNER_SECRET_ACCESS_KEY_ID'],
   },

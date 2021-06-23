@@ -14,7 +14,10 @@ const app = express();
 const port = 3000;
 
 // DB & Mongoose:
-const cloudUri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.grdmy.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+const containerUri = process.env.DB_CONTAINER_STRING;  // connection string for connecting to DB in container
+const cloudUri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER_NAME}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+const connectUri = process.env.NODE_ENV === 'container' ? containerUri : cloudUri;
+
 mongoose
   .connect(cloudUri, {
     useNewUrlParser: true,
@@ -66,7 +69,7 @@ app.use((req, res, next) => {
   err.status = 404;
   res.send('Route not found');
   next(err);
-})
+});
 
 app.listen(port, async () => {
   console.log(`App listening at ${port}`);
