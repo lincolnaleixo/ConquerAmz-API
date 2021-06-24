@@ -22,26 +22,26 @@ app.use(morgan('dev'));
 
 DbService.ClientConnection();
 
-const ConnectSp = async () => {
-  try {
-    // Get Access Token using Refresh Token from self-auth method
-    const sellingPartner = new SellingPartnerAPI({
-      region: 'na',
-      refresh_token: process.env.AWS_REFRESH_TOKEN,
-      options: {
-        auto_request_tokens: false,
-      }
-    });
-    await sellingPartner.refreshAccessToken();
-    await sellingPartner.refreshRoleCredentials();
-    // console.log('access token: ', sellingPartner.access_token);
-    // console.log('credentials: ', sellingPartner.role_credentials);
-  } catch (e) {
-    console.log(e);
-  }
-};
+// const ConnectSp = async () => {
+//   try {
+//     // Get Access Token using Refresh Token from self-auth method
+//     const sellingPartner = new SellingPartnerAPI({
+//       region: 'na',
+//       refresh_token: process.env.AWS_REFRESH_TOKEN,
+//       options: {
+//         auto_request_tokens: false,
+//       }
+//     });
+//     await sellingPartner.refreshAccessToken();
+//     await sellingPartner.refreshRoleCredentials();
+//     console.log('access token: ', sellingPartner.access_token);
+//     // console.log('credentials: ', sellingPartner.role_credentials);
+//   } catch (e) {
+//     console.log(e);
+//   }
+// };
 
-ConnectSp();
+// ConnectSp();
 
 app.get('/', (req, res) => {
   res.send('Hello from Selling-Partner-API!');

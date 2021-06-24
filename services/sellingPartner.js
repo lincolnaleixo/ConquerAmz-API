@@ -1,4 +1,46 @@
+import SellingPartnerAPI from 'amazon-sp-api';
+
+let awsConfigObject = {
+  region:'na',
+  refresh_token:'',
+  access_token:'',
+  role_credentials: {
+    id:'',
+    secret:'',
+    security_token:''
+  },
+  credentials:{
+    SELLING_PARTNER_APP_CLIENT_ID:'',
+    SELLING_PARTNER_APP_CLIENT_SECRET:'',
+    AWS_ACCESS_KEY_ID:'',
+    AWS_SECRET_ACCESS_KEY:'',
+    AWS_SELLING_PARTNER_ROLE:''
+  },
+  options: {
+    auto_request_tokens: false,
+  },
+};
+
 export default {
+  async createUserInstance(configObject) {
+    awsConfigObject.refresh_token = configObject.awsRefreshToken;
+    awsConfigObject.credentials.SELLING_PARTNER_APP_CLIENT_ID = configObject.sellingPartnerAppClientId;
+    awsConfigObject.credentials.SELLING_PARTNER_APP_CLIENT_SECRET = configObject.sellingPartnerAppClientSecret;
+    awsConfigObject.credentials.AWS_ACCESS_KEY_ID = configObject.awsSellingPartnerAccessKeyId;
+    awsConfigObject.credentials.AWS_SECRET_ACCESS_KEY = configObject.awsSellingPartnerSecretAccessKey;
+    awsConfigObject.credentials.AWS_SELLING_PARTNER_ROLE = configObject.awsSellingPartnerRole;
+    const sellingPartner = new SellingPartnerAPI({
+      region: 'na',
+      refresh_token: awsConfigObject.refresh_token,
+      credentials: { ...awsConfigObject.credentials },
+      options: {
+        auto_request_tokens: false,
+      },
+    });
+    await sellingPartner.refreshAccessToken();
+    console.log('access token: ', sellingPartner.access_token);
+    return sellingPartner.access_token;
+  },
   getOrdersList(instance, marketplaceIds) {
     return new Promise((resolve, reject) => {
       instance.callAPI({
