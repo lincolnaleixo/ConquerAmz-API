@@ -12,4 +12,6 @@ router.get('/me', AuthMiddleware.authenticateCalls, userController.getUserDetail
 router.post('/save-sp-auth', AuthMiddleware.authenticateCalls, spConfigController.saveUserConfig);
 router.get('/get-sp-auth', AuthMiddleware.authenticateCalls, spConfigController.getUserConfig);
 
+router.post('/create-instance', spConfigController.createUserInstance)
+
 export default router;
