@@ -5,6 +5,8 @@ import SellingPartnerAPI from 'amazon-sp-api';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import userRoutes from './routes/users.js';
+import orderRoutes from './routes/orders.js';
+import inventoryRoutes from './routes/inventories.js';
 import DbService from './db/db.mjs';
 
 dotenv.config();
@@ -34,8 +36,7 @@ DbService.ClientConnection();
 //     });
 //     await sellingPartner.refreshAccessToken();
 //     await sellingPartner.refreshRoleCredentials();
-//     console.log('access token: ', sellingPartner.access_token);
-//     // console.log('credentials: ', sellingPartner.role_credentials);
+//     console.log('instance: ', sellingPartner);
 //   } catch (e) {
 //     console.log(e);
 //   }
@@ -48,6 +49,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/user', userRoutes);
+app.use('/api', orderRoutes);
+app.use('/api/inventories/', inventoryRoutes);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

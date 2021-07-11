@@ -35,7 +35,6 @@ const configSchema = mongoose.Schema({
 
 configSchema.statics.findAndUpdate = async function(body) {
   const userId = ObjectId(body.userId);
-  console.log('body for model: ', userId);
   const doc = await UserConfig.findByIdAndUpdate(userId, body, {
     upsert: true,
     new: true,

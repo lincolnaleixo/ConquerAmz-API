@@ -4,11 +4,11 @@ let awsConfigObject = {
   region:'na',
   refresh_token:'',
   access_token:'',
-  role_credentials: {
-    id:'',
-    secret:'',
-    security_token:''
-  },
+  // role_credentials: {
+  //   id:'',
+  //   secret:'',
+  //   security_token:''
+  // },
   credentials:{
     SELLING_PARTNER_APP_CLIENT_ID:'',
     SELLING_PARTNER_APP_CLIENT_SECRET:'',
@@ -22,32 +22,71 @@ let awsConfigObject = {
 };
 
 export default {
+  async connectSimple() {
+    try {
+      // Use for Testing purposes <=> own instance created from .env file
+      // Get Access Token using Refresh Token from self-auth method
+      const sellingPartner = new SellingPartnerAPI({
+        region: 'na',
+        refresh_token: process.env.AWS_REFRESH_TOKEN,
+        options: {
+          auto_request_tokens: false,
+        }
+      });
+      await sellingPartner.refreshAccessToken();
+      await sellingPartner.refreshRoleCredentials();
+      return {
+        instance: sellingPartner,
+        token: sellingPartner.access_token,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
   async createUserInstance(configObject) {
+    // Create User instance on the fly (~2s)
     awsConfigObject.refresh_token = configObject.awsRefreshToken;
     awsConfigObject.credentials.SELLING_PARTNER_APP_CLIENT_ID = configObject.sellingPartnerAppClientId;
     awsConfigObject.credentials.SELLING_PARTNER_APP_CLIENT_SECRET = configObject.sellingPartnerAppClientSecret;
     awsConfigObject.credentials.AWS_ACCESS_KEY_ID = configObject.awsSellingPartnerAccessKeyId;
     awsConfigObject.credentials.AWS_SECRET_ACCESS_KEY = configObject.awsSellingPartnerSecretAccessKey;
     awsConfigObject.credentials.AWS_SELLING_PARTNER_ROLE = configObject.awsSellingPartnerRole;
+    const { credentials } = awsConfigObject;
     const sellingPartner = new SellingPartnerAPI({
       region: 'na',
-      refresh_token: awsConfigObject.refresh_token,
-      credentials: { ...awsConfigObject.credentials },
+      refresh_token: configObject.awsRefreshToken,
+      credentials,
       options: {
         auto_request_tokens: false,
       },
     });
-    await sellingPartner.refreshAccessToken();
-    console.log('access token: ', sellingPartner.access_token);
-    return sellingPartner.access_token;
+    try {
+      await sellingPartner.refreshAccessToken();
+      console.log('instance before passing: ', sellingPartner);
+      await sellingPartner.refreshRoleCredentials();
+    } catch (e) {
+      console.log('error creating: ', e);
+    }
+    return {
+      instance: sellingPartner,
+      token: sellingPartner.access_token,
+    };
   },
-  getOrdersList(instance, marketplaceIds) {
+  // region Orders functions
+  async getOrdersList(arg) {
+    let instance = {};
+    if (arg) instance = {...arg};
+    else {
+      const connection = await this.connectSimple();
+      instance = connection.instance;
+    }
     return new Promise((resolve, reject) => {
       instance.callAPI({
         operation: 'getOrders',
         endpoint: 'orders',
         query: {
-          MarkeplaceIds: ['A1PA6795UKMFR9'],
+          MarketplaceIds: [process.env.AWS_MARKETPLACE_ID],
+          CreatedAfter: '2013-10-05T14:48:00.000Z'
         },
       })
         .then((res) => resolve(res))
@@ -61,9 +100,9 @@ export default {
           operation: 'getOrders',
           endpoint: 'orders',
           query: {
-            markeplaceIds: [marketplaceIds],
-            postedBefore: queryParams.endDate,
-            postedAfter: queryParams.startDate
+            markeplaceIds: [process.env.AWS_MARKETPLACE_ID],
+            createdBefore: queryParams.endDate,
+            createdAfter: queryParams.startDate
           },
         })
         .then((res) => resolve(res))
@@ -89,7 +128,24 @@ export default {
         });
     });
   },
-  getInventoryList() {},
+  // endregion Orders functions
+  getInventorySummaries(instance) {
+    // GET /fba/inventory/v1/summaries
+    return new Promise((resolve, reject) => {
+      instance.callAPI({
+        operation: 'getInventorySummaries',
+        endpoint: 'fbaInventory',
+        query: {
+          granularityType: 'Marketplace',
+          marketplaceIds: [process.env.AWS_MARKETPLACE_ID],
+          granularityId: process.env.AWS_MARKETPLACE_ID
+        }
+      })
+        .then((res) => resolve(res))
+        .catch((err) => reject(err));
+    });
+  },
+  // region General
   async testMarketplaceParticipations(instance) {
     let res = null;
     try {
@@ -115,4 +171,5 @@ export default {
       })
     });
   },
+  // endregion General
 };
