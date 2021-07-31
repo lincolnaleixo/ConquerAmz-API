@@ -4,11 +4,6 @@ let awsConfigObject = {
   region:'na',
   refresh_token:'',
   access_token:'',
-  // role_credentials: {
-  //   id:'',
-  //   secret:'',
-  //   security_token:''
-  // },
   credentials:{
     SELLING_PARTNER_APP_CLIENT_ID:'',
     SELLING_PARTNER_APP_CLIENT_SECRET:'',
@@ -62,7 +57,6 @@ export default {
     });
     try {
       await sellingPartner.refreshAccessToken();
-      console.log('instance before passing: ', sellingPartner);
       await sellingPartner.refreshRoleCredentials();
     } catch (e) {
       console.log('error creating: ', e);
@@ -75,7 +69,7 @@ export default {
   // region Orders functions
   async getOrdersList(arg) {
     let instance = {};
-    if (arg) instance = {...arg};
+    if (arg) instance = arg;
     else {
       const connection = await this.connectSimple();
       instance = connection.instance;

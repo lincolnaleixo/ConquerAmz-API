@@ -47,16 +47,9 @@ export default {
   },
   async manualSyncOrders(req, res) {
     try {
-      // const { instance, token} = await sellingPartnerService.createUserInstance(req.body.instance);
-      // console.log('user token: ', token);
-      // const instance = await sellingPartnerService.connectSimple();
       const { Orders } = await sellingPartnerService.getOrdersList();
       const data = [...Orders];
       if (data && data.length > 0) {
-        // const doc = await OrderModel.batchUpdate({
-        //   awsOrders: data,
-        //   userId: req.body.userId,
-        // });
         const doc = await OrderModel.findAndUpdate({
           userId: req.body.userId,
           awsOrders: data,
