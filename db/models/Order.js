@@ -3,7 +3,10 @@ import DbService from '../../db/db.mjs';
 
 const ObjectId = mongoose.Types.ObjectId;
 
-const orderSchema = mongoose.Schema({}, { strict: false });
+const orderSchema = mongoose.Schema({
+  userId: { type: [ObjectId], required: true },
+  awsOrders: { type: Array, required: true },
+}, { strict: false });
 
 orderSchema.statics.findAndUpdate = async function(body) {
   const userId = ObjectId(body.userId);
@@ -23,9 +26,6 @@ orderSchema.statics.batchUpdate = async function(body) {
   let res = null;
   try {
     res = await collection.updateMany(filter, updateDoc);
-    // res = await Order.where('_id', req.body.userId).update(updateDoc, function (err, count) {
-    //   console.log('updated with query!');
-    // });
     console.log('result: ', res);
     return res;
   } catch (error) {

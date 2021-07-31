@@ -51,13 +51,23 @@ export default {
       // console.log('user token: ', token);
       // const instance = await sellingPartnerService.connectSimple();
       const { Orders } = await sellingPartnerService.getOrdersList();
-      console.log('received: ', res);
       const data = [...Orders];
-      if (data && data.length > 0) res.status(200).json({ data });
+      if (data && data.length > 0) {
+        // const doc = await OrderModel.batchUpdate({
+        //   awsOrders: data,
+        //   userId: req.body.userId,
+        // });
+        const doc = await OrderModel.findAndUpdate({
+          userId: req.body.userId,
+          awsOrders: data,
+        });
+        if (doc) res.status(200).json({ data });
+        else res.status(500).json({ message: 'Something wrong happened :(' });
+      }
       else if (data && data.length === 0) res.status(200).json({ message: 'No data found.' });
       else res.status(400).json({ message: 'Bad Request.' });
     } catch (error) {
-      res.status(500).json({ error });
+      res.status(500).json(JSON.stringify(error));
     }
-  },
+  }
 };
