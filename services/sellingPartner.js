@@ -165,7 +165,4 @@ export default {
       })
     });
   },
-  // write data in mongodb
-  async writeToMongo(data) {},
-  // endregion General
 };

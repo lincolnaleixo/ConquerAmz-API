@@ -8,6 +8,8 @@ import userRoutes from './routes/users.js';
 import orderRoutes from './routes/orders.js';
 import inventoryRoutes from './routes/inventories.js';
 import DbService from './db/db.mjs';
+import schedule from 'node-schedule';
+import childprocess from 'child_process';
 
 dotenv.config();
 
@@ -15,7 +17,7 @@ dotenv.config();
 const app = express();
 const port = 3000;
 
-// Add  cors middleware
+// Add cors middleware
 app.use(cors());
 // Add middleware for parsing JSON and urlencoded data
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -42,4 +44,24 @@ app.use((req, res, next) => {
 
 app.listen(port, async () => {
   console.log(`App listening at ${port}`);
+});
+
+// Schedule Orders job to run every 10 minutes
+schedule.scheduleJob('*/1 * * * *', async () => {
+  console.log('Selling-Partner-API is scheduling orders');
+  const job = childprocess.exec('node OrdersBatchUpdates.js',
+    (error, stdout, stderr) => {
+      console.log(`stdout: ${stdout}`);
+      console.log(`stderr: ${stderr}`);
+      if (error !== null) {
+          console.log(`exec error: ${error}`);
+      }
+    }  
+  );
+  job.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+  job.on('exit', (code) => {
+    console.log(`child process exited with code ${code}`);
+  });
 });
