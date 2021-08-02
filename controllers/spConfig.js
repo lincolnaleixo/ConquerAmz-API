@@ -32,10 +32,11 @@ export default {
   },
   async createUserInstance(req, res) {
     try {
-      const token = await sellingPartnerService.createUserInstance(req.body);
+      const { instance, token } = await sellingPartnerService.createUserInstance(req.body.instance);
       res.status(200).json({
         message: 'Started!',
         accessToken: token,
+        instance
       });
     } catch (err) {
       console.log(err);
