@@ -29,7 +29,7 @@ export default {
   },
   async saveOrders(req, res) {
     try {
-      const doc = await OrderModel.findOneAndUpdate(req.body);
+      const doc = await OrderModel.findAndUpdate(req.body);
       if (doc) {
         res.status(200).json({
           message: 'Data saved successfully.',
@@ -63,4 +63,4 @@ export default {
       res.status(500).json(JSON.stringify(error));
     }
   }
-};
+}

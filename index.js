@@ -47,21 +47,41 @@ app.listen(port, async () => {
 });
 
 // Schedule Orders job to run every 10 minutes
-schedule.scheduleJob('*/1 * * * *', async () => {
-  console.log('Selling-Partner-API is scheduling orders');
+schedule.scheduleJob('*/10 * * * *', async () => {
+  console.log('Selling-Partner-API is scheduling orders synchronization.');
   const job = childprocess.exec('node OrdersBatchUpdates.js',
     (error, stdout, stderr) => {
       console.log(`stdout: ${stdout}`);
       console.log(`stderr: ${stderr}`);
       if (error !== null) {
-          console.log(`exec error: ${error}`);
+        console.log(`exec error: ${error}`);
       }
     }  
   );
   job.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
+    console.log(`Orders stdout: ${data}`);
   });
   job.on('exit', (code) => {
-    console.log(`child process exited with code ${code}`);
+    console.log(`Orders child process exited with code ${code}`);
+  });
+});
+
+// Schedule Inventories job to run every 1 hour
+schedule.scheduleJob('*/60 * * * *', async () => {
+  console.log('Selling-Partner-API is scheduling inventories synchronization.');
+  const job = childprocess.exec('node InventoriesBatchUpdates.js',
+    (error, stdout, stderr) => {
+      console.log(`stdout: ${stdout}`);
+      console.log(`stderr: ${stderr}`);
+      if (error !== null) {
+        console.log(`exec error: ${error}`);
+      }
+    }  
+  );
+  job.stdout.on('data', (data) => {
+    console.log(`Inventories stdout: ${data}`);
+  });
+  job.on('exit', (code) => {
+    console.log(`Inventories child process exited with code ${code}`);
   });
 });

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import OrderModel from './db/models/Order.js';
+import InventoryModel from './db/models/Inventory.js';
 import ConfigModel from './db/models/SpConfig.js';
 import SellingPartnerService from './services/sellingPartner.js';
 
@@ -24,7 +24,7 @@ const ClientConnection = () => {
       .catch((err) => {
         console.log('db error: ', err);
         return reject(err);
-      });
+    });
   });
 };
 
@@ -32,7 +32,7 @@ const query = {
   userId: '',
 };
 
-const queryAllOrders = async () => {
+const queryAllInvs = async () => {
   await ClientConnection();
   for await (const config of ConfigModel.find()) {
     let payload = {};
@@ -40,26 +40,27 @@ const queryAllOrders = async () => {
     if (config) {
       const { instance } = await SellingPartnerService.createUserInstance(config);
       if (instance) {
-        const orders = await SellingPartnerService.getOrdersList(instance);
-        if (orders && orders.length > 0) {
+        const data = await SellingPartnerService.getInventorySummaries(instance);
+        const { inventorySummaries } = data;
+        if (inventorySummaries && inventorySummaries.length > 0) {
           payload = {
-            userId: doc.userId,
-            awsOrders: orders,
+            userId: config.userId,
+            inventorySummaries,
           };
         }
       }
     }
     try {
-      const doc = await OrderModel.findOneAndUpdate(payload);
+      const doc = await InventoryModel.findAndUpdate(payload);
       if (doc) {
-        console.log('ORDERS SYNCED!');
+        console.log('INVENTORIES SYNCED!');
         return true;
       }
     } catch (error) {
-      console.log('ERROR SYNCING ORDERS: ', error);
+      console.log('ERROR SYNCING INVENTORIES: ', error);
       throw new Error(error);
     }
   }
 };
 
-queryAllOrders();
+queryAllInvs();

@@ -35,8 +35,8 @@ orderSchema.statics.batchUpdate = async function(body) {
   }
 };
 
-orderSchema.statics.findOrders = async function(body) {
-  const id = ObjectId(body.id);
+orderSchema.statics.findOrders = async function(uid) {
+  const id = ObjectId(uid);
   const doc = await Order.find(id);
   return doc;
 };

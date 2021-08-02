@@ -123,7 +123,13 @@ export default {
     });
   },
   // endregion Orders functions
-  getInventorySummaries(instance) {
+  async getInventorySummaries(arg) {
+    let instance = {};
+    if (arg) instance = arg;
+    else {
+      const connection = await this.connectSimple();
+      instance = connection.instance;
+    }
     // GET /fba/inventory/v1/summaries
     return new Promise((resolve, reject) => {
       instance.callAPI({
