@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/user', userRoutes);
 app.use('/api', orderRoutes);
-app.use('/api/inventories/', inventoryRoutes);
+app.use('/api/inventories', inventoryRoutes);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
