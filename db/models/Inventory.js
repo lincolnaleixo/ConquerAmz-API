@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import DbService from '../../db/db.mjs';
 
 const ObjectId = mongoose.Types.ObjectId;
 

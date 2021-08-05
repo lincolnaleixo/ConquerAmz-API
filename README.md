@@ -14,73 +14,80 @@ npm install
 ###(a): If running on the cloud or locally, add `.env` file in the project's root directory, with the following structure:
 ```
 NODE_ENV=
-SELLING_PARTNER_APP_CLIENT_ID=
-SELLING_PARTNER_APP_CLIENT_SECRET=
-AWS_SELLING_PARTNER_ACCESS_KEY_ID=
-AWS_SELLING_PARTNER_SECRET_ACCESS_KEY=
-AWS_SELLING_PARTNER_ROLE=
-
-AWS_REFRESH_TOKEN=
-AWS_MARKETPLACE_ID=
-```
-where:
-- NODE_ENV describes the environment, i.e. dev/test/staging/production/container
-- The rest of the variables are used to initiate the SellingPartners instance with the self-authorization method (for ConquerAmazon).
-Since each user will have their own credentials and synchronization process, these variables are not mandatory.
-
-###(b): If running with Docker, there is no need to add the `.env`
-
-
-4 - Add database variables to connect to Mongo Atlas Cluster:
-
-```
 DB_USERNAME=
 DB_PASSWORD=
 DB_NAME=
-DB_CLUSTER:
+DB_CLUSTER=
 ```
+where:
+- NODE_ENV describes the environment, i.e. `dev`/`test`/`staging`/`production`/`container`
+- And the rest of the variables will describe the Mongo DB/Cluster connection
 
-**NB**:
-- If you're running the repo with Docker, put `container` as `NODE_ENV`
-
-
-**5 - Run the app locally:**
+**4 - Run the app locally:**
 
 ```
 npm run start
 ```
 
-Keep an eye on the console, as it will throw an error if you are not able to connect to the Mongo cluster.
+- Keep an eye on the console, as it will throw an error if you are not able to connect to the Mongo cluster and messages for the synchronization process.
 
 
+## Requirements
+
+- Node: version 14
+- MongoDB: > version 4
+- Install the rest of the dependencies from `package.json`
 
 ## Existing API Routes
 
-- You can now make API calls to `http://localhost:3000`. Below are the descriptions for 4 routes added to the API:
-
-- `/` -> a test GET call that returns a simple message when the Express API is running
-- `/api/user/register` -> a POST call with the following body:
-
-```
-{
-    "name": "",
-    "email": "",
-    "password": ""
-}
-```
-
-- `/api/user/login` -> a POST call to log the User in, with the following body:
-
-```
-{
-    "email": "",
-    "password": ""
-}
-```
-
-- `/api/user/me` -> a GET call that returns the User data, i.e. Email, ID and Token. This is an **authenticated** call, so in order to get a proper response, you will need to add an Authentication Bearer token in the request header. This token can be found from the `login` API response above.
+- You can now make API calls to `http://localhost:3000`. 
 
 ### Final notes
-- If you are running both the front end and the API from your local machine, make sure to have two separate terminals running each repository. If you are using this approach, then you can simply navigate to `http://localhost:8080` and use the App [to register a new User and log them in].
-- If you are running this with Docker, you will need to create a `Docker-compose.yml` in the parent directory of both repos.
-  So, if the FrontEnd is in `himmelsbach/conqueramazon-fe` and the API is in `himmelsbach/conqueramazon-api`, your Docker-compose will need to be in the `himmelsbach` directory. Additionally, if using this approach, make sure to name the directories as stated (`conqueramazon-fe` and `conqueramazon-api`), and correctly update the environment variables.
+
+- **Running Locally:** If you are running both the front end and the API from your local machine, make sure to have two separate terminals running each repository. While having that, You can simply navigate to `http://localhost:8080` and use the App [to register a new User and log them in], or hit the API locally through HTTP at `http://localhost:3000`.
+
+- **Running on Containers** If you are running this with Docker, you will need to create a `Docker-compose.yml` in the parent directory of both repositories (front end and the API).
+  So, if the FrontEnd is in `himmelsbach/conqueramazon-fe` and the API is in `himmelsbach/conqueramazon-api`, your Docker-compose will need to be in the `himmelsbach` directory. Additionally, make sure to name the directories as stated (`conqueramazon-fe` and `conqueramazon-api`), and correctly update the environment variables in the docker-compose file.
+  - **A template of the Docker Compose file can be found below:**
+
+```docker
+version: "3"
+services:
+    mongo-db:
+        container_name: mongo-container
+        image: mongo
+        restart: always
+        volumes:
+            - ./db:/data/db
+        ports:
+            - "27017:27017"
+    api:
+        container_name: conqueramazon-api
+        build: ./conqueramazon-api
+        restart: always
+        ports:
+            - 3000:3000
+        volumes:
+            - ./conqueramazon-api:/data
+        environment:
+            NODE_ENV: container
+            DB_USERNAME: 
+            DB_NAME: 
+            DB_PASSWORD: 
+            DB_CLUSTER_NAME: 
+        depends_on: 
+            - mongo-db
+    app:
+        container_name: conqueramazon-fe
+        build: ./conqueramazon-fe
+        restart: always
+        depends_on:
+            - api
+        ports:
+            - 8080:8080
+        environment:
+            NODE_ENV: container
+            VUE_APP_API_ENDPOINT: http://localhost:3000
+        volumes:
+            - ./conqueramazon-fe:/data
+```
