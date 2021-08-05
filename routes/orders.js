@@ -6,7 +6,7 @@ const router = Router();
 
 router.get('/get-orders-simple', ordersController.manualSyncOrders);
 router.post('/get-orders-aws', ordersController.getOrdersAws);
-router.post('/get-orders', AuthMiddleware.authenticateCalls, ordersController.getOrders);
+router.get('/get-orders', AuthMiddleware.authenticateCalls, ordersController.getOrders);
 router.post('/save-orders', AuthMiddleware.authenticateCalls, ordersController.saveOrders);
 
 export default router;

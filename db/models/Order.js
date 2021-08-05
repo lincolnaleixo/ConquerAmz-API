@@ -37,7 +37,7 @@ orderSchema.statics.batchUpdate = async function(body) {
 
 orderSchema.statics.findOrders = async function(uid) {
   const id = ObjectId(uid);
-  const doc = await Order.find(id);
+  const doc = await Order.find({ userId: id });
   return doc;
 };
 

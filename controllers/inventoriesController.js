@@ -27,8 +27,8 @@ export default {
   },
   async getInventoriesFromDb(req, res) {
     try {
-      const data = await InventoryModel.getInventoriesFromDb(req.query.userId);
-      if (data && data.length > 0) res.status(200).json({ data });
+      const data = await InventoryModel.getInventories(req.query.userId);
+      if (data && data.length > 0) res.status(200).json(data);
       else if (data && data.length === 0) res.status(200).json({ message: 'No data found.' });
       else res.status(400).json({ message: 'Bad Request.' });
     } catch (error) {
