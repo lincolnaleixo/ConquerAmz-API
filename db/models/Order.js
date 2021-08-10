@@ -37,8 +37,16 @@ orderSchema.statics.batchUpdate = async function(body) {
 
 orderSchema.statics.findOrders = async function(uid) {
   const id = ObjectId(uid);
-  const doc = await Order.find(id);
+  const doc = await Order.find({ userId: id });
   return doc;
+};
+
+orderSchema.statics.findLatestOrders = async function(uid) {
+  const id = ObjectId(uid);
+  const size = 10;
+  const doc = await Order.find({ userId: id }, null, { sort: { PurchaseDate: -1 } });
+  const awsOrders = doc[0].awsOrders;
+  return [...awsOrders].slice(0, size);  // return first 10 items
 };
 
 const Order = mongoose.model('Order', orderSchema);

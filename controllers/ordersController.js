@@ -5,19 +5,17 @@ export default {
   async getOrders(req, res) {
     // get list from DB cluster
     try {
-      const data = await OrderModel.findOrders({ id: req.query.userId });
-      if (data && data.length > 0) res.status(200).json({ data });
+      const data = await OrderModel.findOrders(req.query.userId);
+      if (data && data.length > 0) res.status(200).json(data);
       else if (data && data.length === 0) res.status(200).json({ message: 'No data found.' });
-      else res.status(400).json({ message: 'Bad Request.' });
+      else res.status(400).json({ message: 'Bad Request.', data });
     } catch (error) {
-      res.status(400).json({ error });
+      res.status(500).json({ error });
     }
   },
   async getOrdersAws(req, res) {
     try {
       let { instance, token} = await sellingPartnerService.createUserInstance(req.body.instance);
-      console.log('user token: ', token);
-      console.log('passed instance: ', instance);
       const { Orders } = await sellingPartnerService.getOrdersList(instance);
       const data = [...Orders];
       if (data && data.length > 0) res.status(200).json({ data });
@@ -62,5 +60,17 @@ export default {
     } catch (error) {
       res.status(500).json(JSON.stringify(error));
     }
-  }
+  },
+  async getLatestOrders(req, res) {
+    // TODO: convert this to genrealized time filter method
+    // get latest orders from mongoDB
+    try {
+      const data = await OrderModel.findLatestOrders(req.query.userId);
+      if (data && data.length > 0) res.status(200).json(data);
+      else if (data && data.length === 0) res.status(200).json({ message: 'No data found.' });
+      else res.status(400).json({ message: 'Bad Request.', data });
+    } catch (err) {
+      res.status(500).json(JSON.stringify(err));
+    }
+  },
 }

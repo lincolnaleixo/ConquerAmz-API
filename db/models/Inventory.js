@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import DbService from '../../db/db.mjs';
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -10,7 +9,7 @@ const inventorySchema = mongoose.Schema({
 
 inventorySchema.statics.getInventories = async function (uid) {
   const id = ObjectId(uid);
-  const docs = await Inventory.find(id);
+  const docs = await Inventory.find({ userId: id });
   return docs;
 };
 
