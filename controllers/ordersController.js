@@ -60,5 +60,17 @@ export default {
     } catch (error) {
       res.status(500).json(JSON.stringify(error));
     }
-  }
+  },
+  async getLatestOrders(req, res) {
+    // TODO: convert this to genrealized time filter method
+    // get latest orders from mongoDB
+    try {
+      const data = await OrderModel.findLatestOrders(req.query.userId);
+      if (data && data.length > 0) res.status(200).json(data);
+      else if (data && data.length === 0) res.status(200).json({ message: 'No data found.' });
+      else res.status(400).json({ message: 'Bad Request.', data });
+    } catch (err) {
+      res.status(500).json(JSON.stringify(err));
+    }
+  },
 }
