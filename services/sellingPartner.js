@@ -79,7 +79,7 @@ export default {
         operation: 'getOrders',
         endpoint: 'orders',
         query: {
-          MarketplaceIds: [process.env.AWS_MARKETPLACE_ID],
+          MarketplaceIds: ['ATVPDKIKX0DER'],
           CreatedAfter: '2013-10-05T14:48:00.000Z'
         },
       })
@@ -137,7 +137,7 @@ export default {
         endpoint: 'fbaInventory',
         query: {
           granularityType: 'Marketplace',
-          marketplaceIds: [process.env.AWS_MARKETPLACE_ID],
+          marketplaceIds: ['ATVPDKIKX0DER'],
           granularityId: process.env.AWS_MARKETPLACE_ID
         }
       })
