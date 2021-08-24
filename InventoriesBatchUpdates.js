@@ -19,13 +19,17 @@ const ClientConnection = () => {
       })
       .then(() => {
         console.log('DB is connected.');
-        return resolve();
+        resolve();
       })
       .catch((err) => {
         console.log('db error: ', err);
-        return reject(err);
+        reject(err);
     });
   });
+};
+
+const CloseCurrentClient = () => {
+  return mongoose.disconnect();
 };
 
 const query = {
@@ -34,6 +38,12 @@ const query = {
 
 const queryAllInvs = async () => {
   await ClientConnection();
+  const allConfigs = ConfigModel.find();
+  if (allConfigs.length === 0) {
+    console.log('No existing AWS Configuration found.');
+    CloseCurrentClient();
+    return false;
+  }
   for await (const config of ConfigModel.find()) {
     let payload = {};
     query.userId = config.userId;
@@ -58,6 +68,7 @@ const queryAllInvs = async () => {
       }
     } catch (error) {
       console.log('ERROR SYNCING INVENTORIES: ', error);
+      CloseCurrentClient();
       throw new Error(error);
     }
   }

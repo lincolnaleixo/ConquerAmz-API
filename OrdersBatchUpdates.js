@@ -19,13 +19,17 @@ const ClientConnection = () => {
       })
       .then(() => {
         console.log('DB is connected.');
-        return resolve();
+        resolve();
       })
       .catch((err) => {
         console.log('db error: ', err);
-        return reject(err);
+        reject(err);
       });
   });
+};
+
+const CloseCurrentClient = () => {
+  return mongoose.disconnect();
 };
 
 const query = {
@@ -34,6 +38,11 @@ const query = {
 
 const queryAllOrders = async () => {
   await ClientConnection();
+  if (ConfigModel.find().length === 0) {
+    console.log('No AWS Configurations found.');
+    CloseCurrentClient();
+    return false;
+  }
   for await (const config of ConfigModel.find()) {
     let payload = {};
     query.userId = config.userId;
@@ -57,6 +66,7 @@ const queryAllOrders = async () => {
       }
     } catch (error) {
       console.log('ERROR SYNCING ORDERS: ', error);
+      CloseCurrentClient();
       throw new Error(error);
     }
   }
