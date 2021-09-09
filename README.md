@@ -70,7 +70,7 @@ services:
         volumes:
             - ./conqueramazon-api:/data
         environment:
-            NODE_ENV: container
+            NODE_ENV: "container"
             DB_USERNAME: 
             DB_NAME: 
             DB_PASSWORD: 
@@ -84,10 +84,10 @@ services:
         depends_on:
             - api
         ports:
-            - 8080:8080
+            - 8080:80
         environment:
-            NODE_ENV: container
-            VUE_APP_API_ENDPOINT: http://localhost:3000
+            NODE_ENV: "container"
+            VUE_APP_API_ENDPOINT: "http://localhost:3000"
         volumes:
             - ./conqueramazon-fe:/data
 ```
