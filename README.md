@@ -61,6 +61,8 @@ services:
             - ./db:/data/db
         ports:
             - "27017:27017"
+        networks:
+            - conqueramazon
     api:
         container_name: conqueramazon-api
         build: ./conqueramazon-api
@@ -77,6 +79,8 @@ services:
             DB_CLUSTER_NAME: 
         depends_on: 
             - mongo-db
+        networks:
+            - conqueramazon
     app:
         container_name: conqueramazon-fe
         build: ./conqueramazon-fe
@@ -90,4 +94,9 @@ services:
             VUE_APP_API_ENDPOINT: "http://localhost:3000"
         volumes:
             - ./conqueramazon-fe:/data
+        networks:
+            - conqueramazon
+networks:
+    conqueramazon:
+        driver: bridge   
 ```
